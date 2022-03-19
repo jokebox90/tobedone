@@ -24,10 +24,10 @@ class Task
     #[ORM\Column(type: 'string', length: 50)]
     private $status;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime')]
     private $modifiedAt;
 
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'tasks')]
@@ -83,24 +83,24 @@ class Task
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getModifiedAt(): ?\DateTimeImmutable
+    public function getModifiedAt(): ?\DateTimeInterface
     {
         return $this->modifiedAt;
     }
 
-    public function setModifiedAt(\DateTimeImmutable $modifiedAt): self
+    public function setModifiedAt(\DateTimeInterface $modifiedAt): self
     {
         $this->modifiedAt = $modifiedAt;
 

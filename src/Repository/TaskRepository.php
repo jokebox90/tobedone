@@ -45,6 +45,22 @@ class TaskRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return Task[] Returns an array of Task objects
+     */
+    public function findByAuthor($value)
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.author = :val')
+            ->setParameter('val', $value)
+            ->orderBy('t.created_at', 'ASC')
+            ->orderBy('t.id', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Task[] Returns an array of Task objects
     //  */

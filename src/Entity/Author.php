@@ -32,11 +32,14 @@ class Author implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Tag::class)]
     private $tags;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime')]
     private $lastLoginAt;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $email;
 
     public function __construct()
     {
@@ -174,26 +177,38 @@ class Author implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getLastLoginAt(): ?\DateTimeImmutable
+    public function getLastLoginAt(): ?\DateTimeInterface
     {
         return $this->lastLoginAt;
     }
 
-    public function setLastLoginAt(\DateTimeImmutable $lastLoginAt): self
+    public function setLastLoginAt(\DateTimeInterface $lastLoginAt): self
     {
         $this->lastLoginAt = $lastLoginAt;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }
