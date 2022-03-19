@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des tâches{% endblock %}
+
+{% block pageTitle %}Liste des tâches{% endblock %}
+
+{% block body %}
+
+{% for task in tasks %}
+<div class="uk-margin-large-top uk-card uk-card-default">
+  <div class="uk-card-body">
+    <h3 class="uk-card-title">{{ task.title }}</h3>
+    <p>{{ task.description | raw }}</p>
+  </div>
+  <div class="uk-margin-medium-top uk-padding-small uk-background-muted">
+    <button class="uk-button uk-button-small uk-button-default">
+      <span uk-icon="refresh"></span>
+      <span>Début</span>
+    </button>
+    <button class="uk-button uk-button-small uk-button-default">
+      <span uk-icon="close"></span>
+      <span>Pause</span>
+    </button>
+    <button class="uk-button uk-button-small uk-button-default">
+      <span uk-icon="check"></span>
+      <span>Fin</span>
+    </button class="uk-button uk-button-default">
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

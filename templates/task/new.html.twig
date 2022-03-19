@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle tâche{% endblock %}
+
+{% block pageTitle %}Liste des tâches{% endblock %}
+
+{% block body %}
+<div class="uk-card uk-card-default uk-card-body">
+  <form method="post" class="uk-form">
+    <div class="uk-margin-bottom">
+      <label for="inputtitle">Titre</label>
+      <input type="text" name="title" id="inputTitle" class="uk-input" required>
+    </div>
+    <div id="inputDescriptionContainer" class="uk-margin-bottom"></div>
+
+    <button class="uk-button uk-button-primary uk-button-small uk-width-1-1" type="submit">
+      Enregistrer
+    </button>
+  </form>
+</div>
+{% endblock %}
