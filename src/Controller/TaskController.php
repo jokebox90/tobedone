@@ -3,23 +3,22 @@
 namespace App\Controller;
 
 use App\Entity\Task;
+use App\Service\TaskService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/task')]
 class TaskController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(ManagerRegistry $doctrine): Response
+    public function index(TaskService $service): Response
     {
-        $currentUser = $this->getUser();
-        $repository = $doctrine->getRepository( Task::class );
-        $tasks = $repository->findByAuthor( $currentUser );
-        return $this->render('task/index.html.twig', [
-            'tasks' => $tasks,
-            'username' => $currentUser->getUsername()
-        ]);
+        return new JsonResponse($service->encodeTaskToJson(
+            [ 'tasks' => $service->getAllTasksForAuthor( $this->getUser() ) ]
+        ), 200, [], true);
     }
 
     #[Route('/new', name: 'app_new')]
