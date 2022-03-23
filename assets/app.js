@@ -7,8 +7,7 @@
 
 import UIkit from 'uikit';
 import Icons from 'uikit/dist/js/uikit-icons';
-import './scss/app.scss';
-import './js/TaskEditor';
 
-// loads the Icon plugin
 UIkit.use(Icons);
+
+import './js/index.js';
