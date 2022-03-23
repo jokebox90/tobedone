@@ -20,7 +20,7 @@ class TaskService
     private TaskRepository $repository;
 
     public function __construct(ManagerRegistry $doctrine) {
-        $this->repository = $doctrine->getRepository( Task::class );        $tasks =
+        $this->repository = $doctrine->getRepository( Task::class );
         $this->encoder = new JsonEncoder();
         $defaultContext = [
             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {

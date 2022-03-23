@@ -59,9 +59,9 @@ class Task
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): mixed
     {
-        return $this->description;
+        return json_decode( $this->description );
     }
 
     public function setDescription(string $description): self
