@@ -12,15 +12,13 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class IndexController extends AbstractController
 {
 
-    #[Route(path: '/new', name: 'app_new')]
-    public function new(ManagerRegistry $doctrine): Response
+    #[Route(path: '/', name: 'app_index')]
+    public function index(): Response
     {
-        $currentUser = $this->getUser();
-        $repository = $doctrine->getRepository( Task::class );
-        return $this->render('task/new.html.twig', []);
+        return $this->render('index/index.html.twig', []);
     }
 
-    #[Route(path: '/', name: 'app_login')]
+    #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, ManagerRegistry $doctrine): Response
     {
         // get the login error if there is one
