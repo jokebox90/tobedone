@@ -45,9 +45,10 @@ class TaskController extends AbstractController
         $nextUrl = $this->generateUrl('read_task', [ 'id' => $newTask->getId() ]);
 
         $response = new JsonResponse();
-        $response->setData([ 'next' => $nextUrl ]);
-        $response->setStatusCode( 201 );
-        return $response;
+        return $response
+                ->setData([ 'next' => $nextUrl ])
+                ->setStatusCode( 201 )
+            ;
     }
 
     #[Route(name: 'read_all_tasks', methods: ['GET'])]
@@ -61,12 +62,15 @@ class TaskController extends AbstractController
         $allTasksForAuthor = [ 'tasks' => $service->getAllTasksForAuthor( $demouser ) ];
 
         $response = new JsonResponse();
-        $response->setJson( $service->encodeTaskToJson( $allTasksForAuthor ) );
-        $response->setStatusCode( 200 );
+        $response
+                ->setJson( $service->encodeTaskToJson( $allTasksForAuthor ) )
+                ->setStatusCode( 200 )
+            ;
+
         return $response;
     }
 
-    #[Route('/api/task/{id}', name: 'read_task', methods: ['GET'])]
+    #[Route('/{id}', name: 'read_task', methods: ['GET'])]
     public function readTask(int $id, TaskService $service, ManagerRegistry $doctrine): JsonResponse
     {
         $task = $doctrine
@@ -88,13 +92,32 @@ class TaskController extends AbstractController
             ;
     }
 
-    #[Route('/api/task/{id}', name: 'update_task', methods: ['PUT'])]
-    public function updateTask(ManagerRegistry $doctrine): JsonResponse
+    #[Route('/{id}', name: 'update_task', methods: ['PUT'])]
+    public function updateTask(int $id, Request $request, ManagerRegistry $doctrine): JsonResponse
     {
-        // ...
+        $repository = $doctrine->getRepository( Author::class );
+        $demouser = $repository->findOneBy(['username' => 'demouser']);
+        $task = $repository( Task::class ) ->find($id);
+
+        if ( $task->getAuthor() != $demouser ) {
+            return new JsonResponse('Forbidden', Response::HTTP_FORBIDDEN);
+        }
+
+        $taskData = $request->toArray();
+        $dateNow = new DateTime();
+
+        $task
+                ->setAuthor( $demouser )
+                ->setTitle( $taskData['title'] )
+                ->setDescription( $taskData['description'] )
+                ->setStatus( $taskData['status'] )
+                ->setModifiedAt( $dateNow )
+            ;
+
+        $repository->add($task);
     }
 
-    #[Route('/api/task/{id}', name: 'delete_task', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'delete_task', methods: ['DELETE'])]
     public function deleteTask(ManagerRegistry $doctrine): JsonResponse
     {
         // ...

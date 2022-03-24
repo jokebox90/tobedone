@@ -1,36 +1,63 @@
 // TaskPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 
 const TaskItem = (props) => {
   const [status, setStatus] = useState('created');
-  let badge = null;
+  const [taskChanged, setTaskChanged] = useState(false);
+  let badge;
+  let badgeLabel;
 
   switch (status) {
     case 'created':
-      badge = <div className="uk-card-badge uk-label uk-label-default">Created</div>;
+      badge = "Created";
+      badgeLabel = "default";
       break;
 
     case 'started':
-      badge = <div className="uk-card-badge uk-label uk-label-warning">Started</div>;
+      badge = "Started";
+      badgeLabel = "warning";
       break;
 
     case 'paused':
-      badge = <div className="uk-card-badge uk-label uk-label-danger">Paused</div>;
+      badge = "Paused";
+      badgeLabel = "danger";
       break;
 
     case 'finished':
-      badge = <div className="uk-card-badge uk-label uk-label-success">Finished</div>;
+      badge = "Finished";
+      badgeLabel = "success";
       break;
 
     default:
       break;
   }
 
+  useEffect(() => {
+    if ( !taskChanged ) {
+      return;
+    }
+
+    axios.put(`/api/task/${props.task.id}`, {
+      title: document.getElementById("inputTitle").value,
+      description: document.getElementById("inputDescription").value,
+      status
+    })
+    .then(function (response) {
+      console.log(response.data);
+      setTaskChanged(false);
+    })
+    .catch(function (error) {
+      console.log(error);
+      setTaskChanged(false);
+    });
+  });
+
   return (
     <div className="uk-margin-large-top uk-card uk-card-default">
       <div className="uk-card-body">
-        {badge}
+        <div className={`uk-card-badge uk-label uk-label-`+badgeLabel}>{badge}</div>
         <h3 className="uk-card-title">{props.task.title}</h3>
         <div>
           {props.task.description.blocks.map( (block, index) => (
@@ -54,19 +81,19 @@ const TaskItem = (props) => {
       <div className="uk-margin-medium-top uk-padding-small uk-background-muted">
         <button
           className="uk-button uk-button-small uk-button-default"
-          onClick={() => setStatus('started')}
+          onClick={() => { setStatus('started'); setTaskChanged(true) }}
         >
           <span uk-icon="refresh"></span>
           <span>Début</span>
         </button>
         <button className="uk-button uk-button-small uk-button-default"
-          onClick={() => setStatus('paused')}
+          onClick={() => { setStatus('paused'); setTaskChanged(true) }}
         >
           <span uk-icon="close"></span>
           <span>Pause</span>
         </button>
         <button className="uk-button uk-button-small uk-button-default"
-          onClick={() => setStatus('finished')}
+          onClick={() => { setStatus('finished'); setTaskChanged(true) }}
         >
           <span uk-icon="check"></span>
           <span>Fin</span>
