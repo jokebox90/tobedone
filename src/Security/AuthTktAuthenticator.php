@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
@@ -23,25 +24,27 @@ class AuthTktAuthenticator extends AbstractAuthenticator
      */
     public function supports(Request $request): ?bool
     {
-        return $request->headers->has('X-AUTH-TOKEN');
+        return $request->headers->has('X-AUTH-TOKEN')
+                || ( $request->getMethod() == 'POST' && $request->getPathInfo() == '/login' )
+            ;
     }
 
     public function authenticate(Request $request): Passport
     {
         $apiToken = $request->headers->get('X-AUTH-TOKEN');
         if (null === $apiToken) {
-            // The token header was empty, authentication fails with HTTP Status
-            // Code 401 "Unauthorized"
-            $username = $request->request->get('username', '');
-            $password = new PasswordCredentials($request->request->get('password', ''));
-            return new Passport(
-                new UserBadge($username, function ($userIdentifier) {
-                    return $this->userRepository->findOneBy(['username' => $userIdentifier]);
-                }),
-                $password
-            );
+            if ( $request->getMethod() == 'POST' && $request->getPathInfo() == '/login' ) {
+                $username = $request->request->get('username', '');
+                $password = new PasswordCredentials($request->request->get('password', ''));
+                return new Passport(
+                    new UserBadge($username, function ($userIdentifier) {
+                        return $this->userRepository->findOneBy(['email' => $userIdentifier]);
+                    }),
+                    $password
+                );
+            }
 
-            // throw new CustomUserMessageAuthenticationException('No API token provided');
+            throw new CustomUserMessageAuthenticationException('No API token provided');
         }
 
         return new SelfValidatingPassport(new UserBadge($apiToken));
@@ -55,8 +58,10 @@ class AuthTktAuthenticator extends AbstractAuthenticator
 
         $authTkt = base64_encode(bin2hex(random_bytes(64)));
         $response = new JsonResponse();
-        return $response->setData([ 'authTkt' => $authTkt ])
-                        ->setStatusCode( 200 );
+        return $response
+                ->setData([ 'authTkt' => $authTkt ])
+                ->setStatusCode( 200 )
+            ;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
